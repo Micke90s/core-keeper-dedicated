@@ -6,22 +6,55 @@ cd "${STEAMAPPDIR}"
 xvfbpid=""
 ckpid=""
 
+function discord_send(){
+  if [[ ! -z "${DISCORD}" && $DISCORD -eq 1 ]]; then
+    if [ -z "$DISCORD_HOOK" ]; then
+	  echo "Please set DISCORD_WEBHOOK url."
+    else
+      message=$(eval echo $@)
+      curl -i -H "Accept: application/json" -H "Content-Type:application/json" -X POST --data "{\"content\": \"${message}\"}" "${DISCORD_HOOK}"
+    fi
+  fi
+}
+
+function watch_log(){
+  #[userid:12345678901234567] player Player connected
+  #Disconnected from userid:12345678901234567 with reason App_Min
+  tail -f CoreKeeperServerLog.txt | grep 'connected' | while read line ; do
+
+    if [[ $line =~ "^\[userid:([0-9]*)\] player ([a-zA-Z0-9]*) connected\$" ]]; then 
+      user=${BASH_REMATCH[2]};
+	  declare USER_${BASH_REMATCH[1]}=${test1};
+	  if [ ! -z "${DISCORD_MESSAGE_WELCOME}" ]; then discord_send ${DISCORD_MESSAGE_WELCOME}; fi
+
+    elif [[ $line =~ "^Disconnected from userid:([0-9]*) [\s\S]*\$" ]]; then 
+	  uservar=USER_${BASH_REMATCH[1]};
+      user=${!uservar};
+	  if [ ! -z "${DISCORD_MESSAGE_BYE}" ]; then discord_send ${DISCORD_MESSAGE_BYE}; fi
+    fi
+
+    #discord_send $line
+  done
+}
+
 function kill_corekeeperserver {
-        if [[ ! -z "$ckpid" ]]; then
-                kill $ckpid
-        fi
-        sleep 1
-        if [[ ! -z "$xvfbpid" ]]; then
-                kill $xvfbpid
-        fi
+  if [ ! -z "${DISCORD_MESSAGE_STOP}" ]; then discord_send ${DISCORD_MESSAGE_STOP}; fi
+
+  if [[ ! -z "$ckpid" ]]; then
+    kill $ckpid
+  fi
+  sleep 1
+  if [[ ! -z "$xvfbpid" ]]; then
+    kill $xvfbpid
+  fi
 }
 
 trap kill_corekeeperserver EXIT
 
 if ! (dpkg -l xvfb >/dev/null) ; then
-    echo "Installing xvfb dependency..."
-    sleep 1
-    sudo apt-get update -yy && sudo apt-get install xvfb -yy
+  echo "Installing xvfb dependency..."
+  sleep 1
+  sudo apt-get update -yy && sudo apt-get install xvfb -yy
 fi
 
 set -m
@@ -48,8 +81,8 @@ until [ $retry_count -gt $max_retries ]; do
         sleep 2
     fi done
   if [ $xvfb_test == 255 ]; then exit 255; fi
-
-rm -f GameID.txt
+  
+  rm -f GameID.txt
 
 chmod +x ./CoreKeeperServer
 
@@ -76,23 +109,16 @@ ckpid=$!
 echo "Started server process with pid $ckpid"
 
 while [ ! -f GameID.txt ]; do
-        sleep 0.1
+  sleep 0.1
 done
 
 gameid=$(cat GameID.txt)
 echo "Game ID: ${gameid}"
 
-if [ -z "$DISCORD" ]; then
-	DISCORD=0
-fi
+if [ -z "${DISCORD_MESSAGE_START}" ]; then DISCORD_MESSAGE_START = ${gameid}; fi
+discord_send ${DISCORD_MESSAGE_START}
 
-if [ $DISCORD -eq 1 ]; then
-    if [ -z "$DISCORD_HOOK" ]; then
-	echo "Please set DISCORD_WEBHOOK url."
-        else
-        curl -i -H "Accept: application/json" -H "Content-Type:application/json" -X POST --data "{\"content\": \"${gameid}\"}" "${DISCORD_HOOK}"
-    fi
-fi
+watch_log &
 
 wait $ckpid
 ckpid=""
