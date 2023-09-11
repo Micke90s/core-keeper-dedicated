@@ -16,24 +16,22 @@ function discord_send(){
     fi
   fi
 }
+#Línk to SteamApp! steam://launch/1621690
+
 
 function watch_log(){
-  #[userid:12345678901234567] player Player connected
-  #Disconnected from userid:12345678901234567 with reason App_Min
-  tail -f CoreKeeperServerLog.txt | grep 'connected' | while read line ; do
-
-    if [[ $line =~ "^\[userid:([0-9]*)\] player ([a-zA-Z0-9]*) connected\$" ]]; then 
+  tail -F CoreKeeperServerLog.txt | while read -r line ; do
+    #[userid:12345678901234567] player Player connected
+    if [[ $line =~ ^\[userid:([0-9]*)\]\ player\ ([a-zA-Z0-9]*)\ connected$ ]]; then 
       user=${BASH_REMATCH[2]};
-	  declare USER_${BASH_REMATCH[1]}=${test1};
+	  declare USER_${BASH_REMATCH[1]}=${user};
 	  if [ ! -z "${DISCORD_MESSAGE_WELCOME}" ]; then discord_send ${DISCORD_MESSAGE_WELCOME}; fi
-
-    elif [[ $line =~ "^Disconnected from userid:([0-9]*) [\s\S]*\$" ]]; then 
+    #Disconnected from userid:12345678901234567 with reason App_Min
+    elif [[ $line =~ ^Disconnected\ from\ userid:([0-9]*) ]]; then
 	  uservar=USER_${BASH_REMATCH[1]};
       user=${!uservar};
 	  if [ ! -z "${DISCORD_MESSAGE_BYE}" ]; then discord_send ${DISCORD_MESSAGE_BYE}; fi
     fi
-
-    #discord_send $line
   done
 }
 
