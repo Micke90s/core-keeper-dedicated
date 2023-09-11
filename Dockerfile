@@ -36,7 +36,7 @@ RUN mkdir /tmp/.X11-unix \
 	&& chown -R "${USER}:${USER}" /tmp/.X11-unix
 
 ENV WORLD_NAME="Core Keeper Server" \
-	DATA_PATH="${STEAMAPPDATADIR}" \
+	DATA_PATH="${STEAMAPPDATADIR}"
 
 # Switch to user
 USER ${USER}
