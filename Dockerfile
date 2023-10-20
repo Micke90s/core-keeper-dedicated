@@ -22,11 +22,10 @@ ENV DLURL https://raw.githubusercontent.com/escapingnetwork/core-keeper-dedicate
 #cm2network/steamcmd
 RUN set -x \
     && dpkg --add-architecture i386 \
-    && echo "deb http://ftp.debian.org/debian bullseye main" | tee /etc/apt/sources.list.d/bullseye.list \
     && apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests \
         lib32stdc++6 \
-        lib32gcc-s1 \
+        lib32gcc1 \
         wget \
         ca-certificates \
         nano \
@@ -40,7 +39,11 @@ RUN set -x \
         build-essential \
         libxi6 \
         x11-utils \
-#Workaround for old xvfb (=> Segmentation fault)
+# Installing xvfb direct from Debian Buster causes the Segmentation fault error
+#        xvfb \
+# The workaround by using Debian Bullseye causes a system freeze on Synology because of installed dependencies
+     && echo "deb http://deb.debian.org/debian bullseye main" | tee /etc/apt/sources.list.d/bullseye.list \
+     && apt-get update \
      && apt-get install -y --no-install-recommends --no-install-suggests -t bullseye xvfb \
 #cm2network/steamcmd
     && sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
