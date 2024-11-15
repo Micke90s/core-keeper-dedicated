@@ -5,6 +5,17 @@ As soon as I get something stable i will update the `arm64-box64` branch.
 
 
 # Current tests
+## 2024-11-15 Test with ubuntu
+Ubuntu 24.04.1 LTS
+```
+  curl -sSL https://get.docker.com | sh
+  git clone https://github.com/kelvin124124/core-keeper-dedicated.git
+  cd core-keeper-dedicated/
+  sudo docker compose up
+```
+
+Did not work, yet.
+
 ## 2024-11-15 Reset raspian
 New image `2024-10-22-raspios-bookworm-arm64-lite`
 ```
