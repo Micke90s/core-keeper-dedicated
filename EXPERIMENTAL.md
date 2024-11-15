@@ -5,6 +5,26 @@ As soon as I get something stable i will update the `arm64-box64` branch.
 
 
 # Current tests
+## 2024-11-15 New branch by @kelvin124124
+New idea by @kelvin124124 (https://github.com/kelvin124124/core-keeper-dedicated/tree/exp2)
+based on `arm64v8/debian:bullseye-slim` and `DepotDownloader`
+```
+sudo docker build . --tag kelvin
+sudo docker run --platform linux/arm64 -e BOX86_LD_LIBRARY_PATH=/lib/i386-linux-gnu:/usr/lib/i386-linux-gnu:/usr/lib/mono/x86_64-linux-gnu -e BOX64_LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/mono/amd64 -e PUID=1000 -e PGID=1000 kelvin
+```
+Result:
+```
+[S_API] SteamAPI_Init(): Loaded '/home/steam/.steam/sdk64/steamclient.so' OK.  (First tried local 'steamclient.so')
+CAppInfoCacheReadFromDiskThread took 2 milliseconds to initialize
+Setting breakpad minidump AppID = 1621690
+[S_API FAIL] Tried to access Steam interface SteamNetworkingUtils004 before SteamAPI_Init succeeded.
+Steam API initialized
+Steam server API failed to log in anonymously
+Thread "CHTTPClientThreadPool:0" (ID 141) failed to shut down
+Thread "CHTTPClientThreadPool:0" (ID 141) failed to shut down
+```
+Need to reset raspian
+
 ## 2024-11-04 Prepare new test cases
 * add `-extralog` parameter
 * add infinite sleep for debugging
