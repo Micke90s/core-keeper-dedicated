@@ -5,6 +5,17 @@ As soon as I get something stable i will update the `arm64-box64` branch.
 
 
 # Current tests
+## 2024-11-15 Reset raspian
+New image `2024-10-22-raspios-bookworm-arm64-lite`
+```
+  curl -sSL https://get.docker.com | sh
+  git clone https://github.com/kelvin124124/core-keeper-dedicated.git
+  cd core-keeper-dedicated/
+  git checkout exp
+  sudo docker build . --tag ck
+  sudo docker compose up
+```
+
 ## 2024-11-15 New branch by @kelvin124124
 New idea by @kelvin124124 (https://github.com/kelvin124124/core-keeper-dedicated/tree/exp2)
 based on `arm64v8/debian:bullseye-slim` and `DepotDownloader`
