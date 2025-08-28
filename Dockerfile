@@ -4,7 +4,7 @@
 FROM cm2network/steamcmd:root AS base-amd64
 FROM --platform=arm64 sonroyaalmerol/steamcmd-arm64:root-2025-04-13 AS base-arm64
 
-ARG TARGETARCH
+ENV TARGETARCH=arm64
 FROM base-${TARGETARCH}
 
 LABEL maintainer="leandro.martin@protonmail.com"
@@ -18,7 +18,7 @@ ENV SCRIPTSDIR="${HOMEDIR}/scripts"
 ENV MODSDIR="${STEAMAPPDIR}/CoreKeeperServer_Data/StreamingAssets/Mods"
 ENV DLURL=https://raw.githubusercontent.com/escapingnetwork/core-keeper-dedicated
 
-ARG TARGETARCH
+ENV TARGETARCH=arm64
 RUN case "${TARGETARCH}" in \
     "amd64") dpkg --add-architecture i386 ;; \
     esac
